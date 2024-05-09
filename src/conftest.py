@@ -8,6 +8,11 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from src.infrastructure.db.models.users import User
 
 
+pytest_plugins = [
+    "src.tests.infrastructure.fixtures.fixture_user",
+]
+
+
 @pytest.fixture(scope='session', autouse=True)
 async def init_db():
     client = AsyncIOMotorClient("mongodb://localhost:27017")

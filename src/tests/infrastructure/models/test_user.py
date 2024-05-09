@@ -1,4 +1,5 @@
-from faker import Faker
+import pytest
+from pymongo.errors import DuplicateKeyError
 
 from src.infrastructure.db.models.users import User
 
@@ -7,19 +8,60 @@ class TestUserModel:
 
     async def test_create_user(
             self,
-            faker: Faker
+            get_user_data: dict,
+
     ):
-        data = {"email": faker.email(), "username": f'username:{faker.word()}',
-                "about_me": faker.paragraph(), "password": faker.password()}
-        user = User(**data)
+        user = User(**get_user_data)
 
         await user.insert()
 
         assert user
         assert user.id
-        assert user.email == data['email']
-        assert user.username == data['username']
-        assert user.about_me == data['about_me']
-        assert user.password == data['password']
+        assert user.email == get_user_data['email']
+        assert user.username == get_user_data['username']
+        assert user.about_me == get_user_data['about_me']
+        assert user.password == get_user_data['password']
         assert user.created_at
+
+    async def test_create_user_without_about_me(
+            self,
+            get_user_data: dict,
+
+    ):
+        get_user_data['about_me'] = None
+        user = User(**get_user_data)
+
+        await user.insert()
+
+        assert user
+        assert user.id
+        assert user.email == get_user_data['email']
+        assert user.username == get_user_data['username']
+        assert user.about_me == get_user_data['about_me']
+        assert user.password == get_user_data['password']
+        assert user.created_at
+
+    async def test_cant_create_not_unique_username(
+            self,
+            get_user: User,
+            get_user_data: dict
+    ):
+        get_user_data['username'] = get_user.username
+        user = User(**get_user_data)
+
+        with pytest.raises(DuplicateKeyError):
+            await user.insert()
+
+    async def test_cant_create_not_unique_email(
+            self,
+            get_user: User,
+            get_user_data: dict
+    ):
+        get_user_data['email'] = get_user.email
+        user = User(**get_user_data)
+
+        with pytest.raises(DuplicateKeyError):
+            await user.insert()
+
+
 

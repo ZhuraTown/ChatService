@@ -1,0 +1,25 @@
+import pytest
+from faker import Faker
+
+from src.infrastructure.db.models.users import User
+
+
+@pytest.fixture
+def get_user_data(
+        faker: Faker,
+):
+    return {
+        "email": faker.email(),
+        "username": f'username:{faker.word()}',
+        "about_me": faker.paragraph(),
+        "password": faker.password()
+    }
+
+
+@pytest.fixture
+async def get_user(
+        get_user_data: dict
+):
+    user = User(**get_user_data)
+    await user.insert()
+    return user

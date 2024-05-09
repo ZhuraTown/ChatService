@@ -63,5 +63,16 @@ class TestUserModel:
         with pytest.raises(DuplicateKeyError):
             await user.insert()
 
+    async def test_get_user(
+            self,
+            get_user: User,
+    ):
+        founded_user = await User.get(get_user.id)
 
+        assert founded_user
+        assert founded_user.id == get_user.id
+        assert founded_user.email == get_user.email
+        assert founded_user.username == get_user.username
+        assert founded_user.about_me == get_user.about_me
+        assert founded_user.password == get_user.password
 

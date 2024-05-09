@@ -2,6 +2,7 @@ import pytest
 from faker import Faker
 
 from src.infrastructure.db.models.users import User
+from src.infrastructure.db.repositories.user import UserRepository
 
 
 @pytest.fixture
@@ -23,3 +24,8 @@ async def get_user(
     user = User(**get_user_data)
     await user.insert()
     return user
+
+
+@pytest.fixture
+def get_repository_user():
+    return UserRepository()

@@ -1,0 +1,27 @@
+from typing import Protocol, List
+from uuid import UUID
+
+
+class CreateRepositoryInterfaceMixin[E, V](Protocol):
+
+    async def create(self, entity: E, **kwargs) -> V: raise NotImplementedError
+
+
+class UpdateRepositoryInterfaceMixin[U, V](Protocol):
+
+    async def update(self, id: UUID, update_data: U, **kwargs) -> V: raise NotImplementedError
+
+
+class GetRepositoryInterfaceMixin[V](Protocol):
+
+    async def get(self, id: UUID, **kwargs) -> V | None: raise NotImplementedError
+
+
+class ListRepositoryInterfaceMixin[F, V](Protocol):
+
+    async def list(self, filters: F, **kwargs) -> List[V]: raise NotImplementedError
+
+
+class DeleteRepositoryInterfaceMixin(Protocol):
+
+    async def delete(self, id: UUID, **kwargs) -> None: raise NotImplementedError

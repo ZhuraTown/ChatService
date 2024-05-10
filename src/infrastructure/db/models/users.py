@@ -16,6 +16,7 @@ class User(Document):
     password: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+    deleted_at: Optional[datetime] = None
     # todo: make later
     # email_confirmed_at: datetime | None = None
 

@@ -3,7 +3,7 @@ from datetime import datetime, UTC
 
 from beanie.odm.operators.update.general import Set
 
-from src.infrastructure.db.convertors.user import convert_user_dbmodel_to_dto
+from src.infrastructure.db.convertors.user import convert_user_dbmodel_to_dto, convert_user_dbmodel_to_full_dto
 from src.infrastructure.db.models.users import User
 from src.transfer.user import UserDTO, UpdateUserDTO, FilterUserDTO
 
@@ -46,3 +46,17 @@ class UserRepository:
     ):
         user = await User.find(User.id == id, User.deleted_at == None).first_or_none()
         await user.update(Set({User.deleted_at: datetime.now(tz=UTC)}))
+
+    async def get_user_by_email(
+            self,
+            email: str
+    ) -> UserDTO | None:
+        user = await User.find(User.email == email).first_or_none()
+        return convert_user_dbmodel_to_full_dto(user)
+
+    async def get_user_by_username(
+            self,
+            username: str
+    ) -> UserDTO | None:
+        user = await User.find(User.username == username).first_or_none()
+        return convert_user_dbmodel_to_full_dto(user)

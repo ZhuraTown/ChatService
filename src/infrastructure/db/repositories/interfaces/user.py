@@ -6,7 +6,7 @@ from src.infrastructure.db.repositories.interfaces.base import (
     ListRepositoryInterfaceMixin,
     DeleteRepositoryInterfaceMixin,
 )
-from src.transfer.user import (UserDTO, UpdateUserDTO, FilterUserDTO)
+from src.transfer.user import (UserDTO, UpdateUserDTO, FilterUserDTO, UserFullDTO)
 
 
 class UserRepositoryI(
@@ -16,4 +16,14 @@ class UserRepositoryI(
     ListRepositoryInterfaceMixin[FilterUserDTO, UserDTO],
     DeleteRepositoryInterfaceMixin,
 ):
-    ...
+    async def get_user_by_email(
+            self,
+            email: str
+    ) -> UserFullDTO | None:
+        raise NotImplementedError
+
+    async def get_user_by_username(
+            self,
+            username: str
+    ) -> UserFullDTO | None:
+        raise NotImplementedError

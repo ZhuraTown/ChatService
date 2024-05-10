@@ -19,7 +19,7 @@ class InfrastructureSettings(BaseSettings):
     @classmethod
     def get_mongo_dsn(cls, _, info: ValidationInfo):
         return MongoDsn.build(
-            scheme="mongodb+srv",
+            scheme="mongodb",
             username=info.data["db_user"],
             password=info.data["db_password"],
             host=info.data["db_host"],

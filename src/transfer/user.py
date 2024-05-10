@@ -14,6 +14,10 @@ class UserDTO(BaseModel):
     about_me: Optional[str]
 
 
+class UserFullDTO(UserDTO):
+    password: str
+
+
 class ToCreateUserDTO(BaseModel):
     email: str
     username: str

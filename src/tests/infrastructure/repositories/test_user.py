@@ -98,6 +98,26 @@ class TestUserRepository:
         assert not deleted_user
         assert user_from_db.deleted_at
 
+    async def test_get_user_by_email(
+            self,
+            get_user: User,
+            get_repository_user: UserRepositoryI
+    ):
+        founded_user = await get_repository_user.get_user_by_email(get_user.email)
 
+        assert founded_user
+        assert founded_user.email == get_user.email
+        assert isinstance(founded_user, UserDTO)
+
+    async def test_get_user_by_username(
+            self,
+            get_user: User,
+            get_repository_user: UserRepositoryI
+    ):
+        founded_user = await get_repository_user.get_user_by_username(get_user.username)
+
+        assert founded_user
+        assert founded_user.username == get_user.username
+        assert isinstance(founded_user, UserDTO)
 
 

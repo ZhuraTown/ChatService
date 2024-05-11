@@ -37,7 +37,10 @@ class UserRepository:
             self,
             filters: FilterUserDTO
     ) -> list[UserDTO]:
-        users = await User.find(limit=filters.limit, skip=filters.offset).to_list()
+        users = await (User.find(User.deleted_at == None,
+                                 limit=filters.limit,
+                                 skip=filters.offset)
+                       .to_list())
         return [convert_user_dbmodel_to_dto(user) for user in users]
 
     async def delete(
@@ -65,5 +68,8 @@ class UserRepository:
             self,
             filters: FilterUserDTO
     ) -> int:
-        count = await User.find(limit=filters.limit, skip=filters.offset).count()
+        count = await (User.find(User.deleted_at == None,
+                                 limit=filters.limit,
+                                 skip=filters.offset)
+                       .count())
         return count

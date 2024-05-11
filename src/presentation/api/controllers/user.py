@@ -6,7 +6,8 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from application.services.interfaces.user import UserServiceI
 from presentation.api.controllers import lo_paginator, LimitOffsetPaginator, PaginatedResponse
-from presentation.api.controllers.requests.user import CreateUserRequest, get_user_filters, GetUserFilterRequest
+from presentation.api.controllers.requests.user import CreateUserRequest, get_user_filters, GetUserFilterRequest, \
+    UpdateUserRequest
 from presentation.api.controllers.responses.user import UserResponse
 from presentation.api.deps.services import get_user_service
 
@@ -62,6 +63,23 @@ async def get_user(
     if not user:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
     return user
+
+
+@router.put(
+    "/{user_id}",
+    description="Обновить данные пользователя",
+    response_model=UserResponse,
+    status_code=HTTPStatus.CREATED,
+)
+async def update_user(
+        user_id: UUID,
+        update_data: UpdateUserRequest,
+        service: Annotated[UserServiceI, Depends(get_user_service)],
+):
+    user = await service.get(user_id)
+    if not user:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
+    return await service.update(user_id, update_data.convert_to_dto())
 
 
 @router.delete(

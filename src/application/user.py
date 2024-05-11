@@ -12,7 +12,7 @@ from src.transfer.user import (
     ToCreateUserDTO,
     UpdateUserDataDTO,
     UpdateUserPasswordDTO,
-    UserFullDTO,
+    UserFullDTO, FilterUserDTO,
 )
 
 
@@ -34,6 +34,13 @@ class UserService(
 
     def __init__(self, user_repository):
         self._user_repository: UserRepositoryI = user_repository
+
+    async def count(
+            self,
+            filters: FilterUserDTO,
+    ) -> int:
+        count = await self._user_repository.count(filters)
+        return count
 
     async def create(
             self,
@@ -66,6 +73,13 @@ class UserService(
             raise UserNotExistError(id)
         await self._user_repository.update(id, update_data)
         return await self.get(id)
+
+    async def list(
+            self,
+            filters: FilterUserDTO
+    ) -> list[UserDTO]:
+        users = await self._user_repository.list(filters)
+        return users
 
     async def soft_delete(
             self,

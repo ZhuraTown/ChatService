@@ -60,3 +60,10 @@ class UserRepository:
     ) -> UserDTO | None:
         user = await User.find(User.username == username).first_or_none()
         return convert_user_dbmodel_to_full_dto(user)
+
+    async def count(
+            self,
+            filters: FilterUserDTO
+    ) -> int:
+        count = await User.find(limit=filters.limit, skip=filters.offset).count()
+        return count

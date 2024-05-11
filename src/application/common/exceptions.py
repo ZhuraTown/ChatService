@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+
+from fastapi.exceptions import ValidationException
 
 
 class ApplicationException(Exception):
@@ -6,5 +9,6 @@ class ApplicationException(Exception):
         return 'An application error occurred'
 
 
-class ToClientException(ApplicationException):
-    ...
+@dataclass
+class ToClientException(ValidationException):
+    errors: str

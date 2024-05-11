@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field
 
-from transfer.user import ToCreateUserDTO
+from transfer.user import ToCreateUserDTO, FilterUserDTO
 
 
 class CreateUserRequest(BaseModel):
@@ -18,3 +18,21 @@ class CreateUserRequest(BaseModel):
             about_me=self.about_me,
             password=self.password,
         )
+
+
+class GetUserFilterRequest(BaseModel):
+    search: str | None = None
+
+    def convert_to_dto(
+            self,
+            limit: int | None = None,
+            offset: int | None = None
+    ) -> FilterUserDTO:
+        return FilterUserDTO(limit=limit, offset=offset, search=self.search)
+
+
+def get_user_filters(
+        search: str | None = None
+
+) -> GetUserFilterRequest:
+    return GetUserFilterRequest(search=search)

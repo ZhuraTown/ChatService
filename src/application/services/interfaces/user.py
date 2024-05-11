@@ -1,4 +1,3 @@
-from typing import Protocol
 from uuid import UUID
 
 from src.application.services.interfaces.base import (
@@ -7,6 +6,7 @@ from src.application.services.interfaces.base import (
     GetServiceInterfaceMixin,
     ListServiceInterfaceMixin,
     SoftDeleteServiceInterfaceMixin,
+    CountServiceInterfaceMixin,
 )
 from src.transfer.user import (
     ToCreateUserDTO,
@@ -22,6 +22,7 @@ class UserServiceI(
     GetServiceInterfaceMixin[UserDTO],
     ListServiceInterfaceMixin[FilterUserDTO, UserDTO],
     SoftDeleteServiceInterfaceMixin,
+    CountServiceInterfaceMixin[FilterUserDTO]
 ):
     async def change_password(
             self,

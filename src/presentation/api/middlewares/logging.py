@@ -1,11 +1,10 @@
 import uuid
 
 from fastapi import HTTPException, Request
+from fastapi.exceptions import ValidationException
 from starlette import status
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
-from application.common.exceptions import ToClientException
-from application.services.exceptions.user import EmailAlreadyExistError
 from log import app_logger, request_id_ctx_var
 
 
@@ -30,7 +29,7 @@ class RequestLogMiddleware(BaseHTTPMiddleware):
                 status_code=http_exception.status_code,
                 content={"error": "Client Error", "message": str(http_exception.detail)},
             )
-        except ToClientException as e:
+        except ValidationException as e:
             app_logger.error(f"Exception - {e.__class__.__name__}, Detail - {e}")
             return JSONResponse(
                 status_code=status.HTTP_400_BAD_REQUEST,

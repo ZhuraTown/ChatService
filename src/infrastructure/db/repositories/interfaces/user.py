@@ -4,7 +4,7 @@ from src.infrastructure.db.repositories.interfaces.base import (
     UpdateRepositoryInterfaceMixin,
     GetRepositoryInterfaceMixin,
     ListRepositoryInterfaceMixin,
-    DeleteRepositoryInterfaceMixin,
+    DeleteRepositoryInterfaceMixin, CountRepositoryInterfaceMixin,
 )
 from src.transfer.user import (UserDTO, UpdateUserDTO, FilterUserDTO, UserFullDTO)
 
@@ -15,6 +15,7 @@ class UserRepositoryI(
     GetRepositoryInterfaceMixin[UserDTO],
     ListRepositoryInterfaceMixin[FilterUserDTO, UserDTO],
     DeleteRepositoryInterfaceMixin,
+    CountRepositoryInterfaceMixin
 ):
     async def get_user_by_email(
             self,

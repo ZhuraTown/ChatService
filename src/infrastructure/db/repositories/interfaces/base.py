@@ -25,3 +25,8 @@ class ListRepositoryInterfaceMixin[F, V](Protocol):
 class DeleteRepositoryInterfaceMixin(Protocol):
 
     async def delete(self, id: UUID, **kwargs) -> None: raise NotImplementedError
+
+
+class CountRepositoryInterfaceMixin[F](Protocol):
+
+    async def count(self, filters: F, **kwargs) -> int: raise NotImplementedError

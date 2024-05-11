@@ -48,6 +48,6 @@ class UpdateUserPasswordDTO(UpdateUserDTO):
 
 class FilterUserDTO(BaseModel):
     search: Optional[str] = None
-    limit: int = 10
-    offset: int = 0
+    limit: int | None = None
+    offset: int | None = None
 

@@ -25,3 +25,8 @@ class ListServiceInterfaceMixin[F, V](Protocol):
 class SoftDeleteServiceInterfaceMixin(Protocol):
 
     async def soft_delete(self, id: UUID, **kwargs) -> None: raise NotImplementedError
+
+
+class CountServiceInterfaceMixin[F](Protocol):
+
+    async def count(self, filters: F, **kwargs) -> int: raise NotImplementedError

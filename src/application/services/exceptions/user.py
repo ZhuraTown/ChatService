@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from src.application.common.exceptions import ToClientException
+from fastapi.exceptions import ValidationException
 
 
-@dataclass(eq=False)
-class UserNotExistError(ToClientException):
+@dataclass
+class UserNotExistError(ValidationException):
     id: UUID
 
     @property
@@ -13,8 +13,8 @@ class UserNotExistError(ToClientException):
         return f"User with id:{self.id} not exist!"
 
 
-@dataclass(eq=False)
-class UsernameAlreadyExistError(ToClientException):
+@dataclass
+class UsernameAlreadyExistError(ValidationException):
     username: str
 
     @property
@@ -22,8 +22,8 @@ class UsernameAlreadyExistError(ToClientException):
         return f"User with username:{self.username} already exist!"
 
 
-@dataclass(eq=False)
-class EmailAlreadyExistError(ToClientException):
+@dataclass
+class EmailAlreadyExistError(ValidationException):
     email: str
 
     @property

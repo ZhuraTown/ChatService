@@ -16,4 +16,13 @@ class ApiConfig(BaseSettings):
     ALLOWED_HOSTS: Sequence[str] = ["*"]
 
 
+class AuthConfig(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="AUTH_")
+    SECRET_KEY: str = "secret_key"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_TTL: int = 30
+    REFRESH_TOKEN_TTL: int = 4320
+
+
 api_settings = ApiConfig()
+auth_settings = AuthConfig()

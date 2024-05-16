@@ -16,8 +16,72 @@ faker = "25.0.1"
 websockets = "12.0"
 pytest = "8.2.0"
 pytest-asyncio = "0.23.6"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+argon2-cffi = "^23.1.0"
+ruff = "^0.4.4"
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+exclude = [
+    "migrations",
+    "*_pb2.py",
+    "*_pb2_grpc.py",
+    "*_pb2.pyi"
+]
+
+ignore = [
+    "B008",
+    "B024",
+    "F403",    # star imports
+    "F405",    # probably undefined stuff from star imports
+    "E731",    # lambda expressions
+    "ARG004",  # Unused method argument
+    "D102",    # missing dockstring in public method
+    "C901",    # method is too complex
+    "A003",    # Class attributes `oid` is shadowing a python builtin
+    "SIM105",  # Use `contextlib.suppress` insted of try-except-pass
+    "B904",
+]
+
+select = [
+    "E",    # default
+    "F",    # default
+    "B",    # bugbear, blind-except
+    "Q",    # quotes
+    "A",    # builtins
+    "PT",   # pytest-style
+    "INP",  # pep420
+    "SIM",  # simplify
+    "COM",
+    "T",    # prints
+     "C",
+]
+
+[tool.ruff.flake8-quotes]
+inline-quotes = "double"
+multiline-quotes = "double"
+
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+order-by-type = true
+
+
+[tool.isort]
+py_version=312
+profile = "black"
+combine_as_imports = true
+skip = [
+    "migrations",
+    "*_pb2.py",
+    "*_pb2_grpc.py",
+    "*_pb2.pyi"
+]

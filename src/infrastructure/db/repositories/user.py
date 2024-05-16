@@ -11,65 +11,62 @@ from src.transfer.user import UserDTO, UpdateUserDTO, FilterUserDTO
 class UserRepository:
     async def create(
             self,
-            user: User
+            user: User,
     ) -> UserDTO:
         await user.insert()
         return await self.get(user.id)
 
     async def get(
             self,
-            id: UUID,
+            oid,
     ) -> UserDTO | None:
-        user = await User.find(User.id == id, User.deleted_at == None).first_or_none()
+        search_criteria = {User.id: oid, User.deleted_at: None}
+        user = await User.find(search_criteria).first_or_none()
         return convert_user_dbmodel_to_dto(user)
 
     async def update(
             self,
-            id: UUID,
-            update_data: UpdateUserDTO
+            oid: UUID,
+            update_data: UpdateUserDTO,
     ) -> UserDTO:
-        # todo: fix me later deleted_at
-        user = await User.find(User.id == id, User.deleted_at == None).first_or_none()
+        search_criteria = {User.id: oid, User.deleted_at: None}
+        user = await User.find(search_criteria).first_or_none()
         await user.set(update_data.get_data())
-        return await self.get(id)
+        return await self.get(oid)
 
     async def list(
             self,
-            filters: FilterUserDTO
+            filters: FilterUserDTO,
     ) -> list[UserDTO]:
-        users = await (User.find(User.deleted_at == None,
-                                 limit=filters.limit,
-                                 skip=filters.offset)
-                       .to_list())
+        search_criteria = {User.deleted_at: None}
+        users = await User.find(search_criteria, limit=filters.limit, skip=filters.offset).to_list()
         return [convert_user_dbmodel_to_dto(user) for user in users]
 
     async def delete(
             self,
-            id: UUID
+            oid: UUID,
     ):
-        user = await User.find(User.id == id, User.deleted_at == None).first_or_none()
+        user = await User.find(User.id == oid).first_or_none()
         await user.update(Set({User.deleted_at: datetime.now(tz=UTC)}))
 
     async def get_user_by_email(
             self,
-            email: str
+            email: str,
     ) -> UserDTO | None:
         user = await User.find(User.email == email).first_or_none()
         return convert_user_dbmodel_to_full_dto(user)
 
     async def get_user_by_username(
             self,
-            username: str
+            username: str,
     ) -> UserDTO | None:
         user = await User.find(User.username == username).first_or_none()
         return convert_user_dbmodel_to_full_dto(user)
 
     async def count(
             self,
-            filters: FilterUserDTO
+            filters: FilterUserDTO,
     ) -> int:
-        count = await (User.find(User.deleted_at == None,
-                                 limit=filters.limit,
-                                 skip=filters.offset)
-                       .count())
+        search_criteria = {User.deleted_at: None}
+        count = await User.find(search_criteria).count()
         return count

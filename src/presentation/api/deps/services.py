@@ -1,5 +1,3 @@
-from fastapi import Depends
-
 from application.user import UserService
 from infrastructure.db.repositories.user import UserRepository
 

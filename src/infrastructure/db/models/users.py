@@ -13,10 +13,10 @@ class User(Document):
     username: Indexed(str, unique=True)
     about_me: Optional[str] = Field(None)
 
-    password: str
+    hash_password: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
-    deleted_at: Optional[datetime] = None
+    deleted_at: Optional[datetime] = Field(None)
     # todo: make later
     # email_confirmed_at: datetime | None = None
 
@@ -31,6 +31,6 @@ class User(Document):
                 "email": "example@user.com",
                 "username": "ExampleUser",
                 "about_me": "Good boy!",
-                "created_at": "2024-01-01 00:00:01"
-            }
+                "created_at": "2024-01-01 00:00:01",
+            },
         }

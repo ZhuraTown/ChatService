@@ -6,7 +6,7 @@ from fastapi.exceptions import ValidationException
 class ApplicationException(Exception):
     @property
     def message(self) -> str:
-        return 'An application error occurred'
+        return "An application error occurred"
 
 
 @dataclass

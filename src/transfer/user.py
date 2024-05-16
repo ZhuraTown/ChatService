@@ -8,14 +8,14 @@ from src.infrastructure.db.models.users import User
 
 
 class UserDTO(BaseModel):
-    id: UUID
+    oid: UUID
     email: str
     username: str
     about_me: Optional[str]
 
 
 class UserFullDTO(UserDTO):
-    password: str
+    hash_password: str
 
 
 class ToCreateUserDTO(BaseModel):
@@ -40,10 +40,10 @@ class UpdateUserDataDTO(UpdateUserDTO):
 
 
 class UpdateUserPasswordDTO(UpdateUserDTO):
-    password: str
+    hash_password: str
 
     def get_data(self):
-        return {User.password: self.password}
+        return {User.hash_password: self.hash_password}
 
 
 class FilterUserDTO(BaseModel):

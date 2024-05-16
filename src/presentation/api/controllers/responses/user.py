@@ -7,7 +7,7 @@ from transfer.user import UserDTO
 
 
 class UserResponse(BaseResponse):
-    id: UUID
+    oid: UUID
     email: EmailStr
     username: str
     about_me: Optional[str]
@@ -15,8 +15,9 @@ class UserResponse(BaseResponse):
     @classmethod
     def convert_from_dto(cls, dto: UserDTO):
         return cls(
-            id=dto.id,
+            oid=dto.oid,
             email=dto.email,
             username=dto.username,
             about_me=dto.about_me,
         )
+

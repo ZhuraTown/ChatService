@@ -17,10 +17,10 @@ class TestUserModel:
 
         assert user
         assert user.id
-        assert user.email == get_user_data['email']
-        assert user.username == get_user_data['username']
-        assert user.about_me == get_user_data['about_me']
-        assert user.password == get_user_data['password']
+        assert user.email == get_user_data["email"]
+        assert user.username == get_user_data["username"]
+        assert user.about_me == get_user_data["about_me"]
+        assert user.hash_password == get_user_data["hash_password"]
         assert user.created_at
 
     async def test_create_user_without_about_me(
@@ -28,25 +28,25 @@ class TestUserModel:
             get_user_data: dict,
 
     ):
-        get_user_data['about_me'] = None
+        get_user_data["about_me"] = None
         user = User(**get_user_data)
 
         await user.insert()
 
         assert user
         assert user.id
-        assert user.email == get_user_data['email']
-        assert user.username == get_user_data['username']
-        assert user.about_me == get_user_data['about_me']
-        assert user.password == get_user_data['password']
+        assert user.email == get_user_data["email"]
+        assert user.username == get_user_data["username"]
+        assert user.about_me == get_user_data["about_me"]
+        assert user.hash_password == get_user_data["hash_password"]
         assert user.created_at
 
     async def test_cant_create_not_unique_username(
             self,
             get_user: User,
-            get_user_data: dict
+            get_user_data: dict,
     ):
-        get_user_data['username'] = get_user.username
+        get_user_data["username"] = get_user.username
         user = User(**get_user_data)
 
         with pytest.raises(DuplicateKeyError):
@@ -55,9 +55,9 @@ class TestUserModel:
     async def test_cant_create_not_unique_email(
             self,
             get_user: User,
-            get_user_data: dict
+            get_user_data: dict,
     ):
-        get_user_data['email'] = get_user.email
+        get_user_data["email"] = get_user.email
         user = User(**get_user_data)
 
         with pytest.raises(DuplicateKeyError):
@@ -74,5 +74,5 @@ class TestUserModel:
         assert founded_user.email == get_user.email
         assert founded_user.username == get_user.username
         assert founded_user.about_me == get_user.about_me
-        assert founded_user.password == get_user.password
+        assert founded_user.hash_password == get_user.hash_password
 

@@ -22,11 +22,18 @@ class UserServiceI(
     GetServiceInterfaceMixin[UserDTO],
     ListServiceInterfaceMixin[FilterUserDTO, UserDTO],
     SoftDeleteServiceInterfaceMixin,
-    CountServiceInterfaceMixin[FilterUserDTO]
+    CountServiceInterfaceMixin[FilterUserDTO],
 ):
     async def change_password(
             self,
             user_id: UUID,
-            update_data: UpdateUserPasswordDTO
+            update_data: UpdateUserPasswordDTO,
     ) -> UserDTO:
+        raise NotImplementedError
+
+    async def authenticate(
+            self,
+            username: str,
+            password: str,
+    ) -> UserDTO | None:
         raise NotImplementedError

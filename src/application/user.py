@@ -1,7 +1,12 @@
 from uuid import UUID
 
+
 from src.infrastructure.db.convertors.user import convert_created_user_to_dbmodel
 from src.infrastructure.db.repositories.interfaces.user import UserRepositoryI
+from src.application.auth.hashing import (
+    get_password_hash,
+    verify_password_and_update,
+)
 from src.application.services.exceptions.user import (
     EmailAlreadyExistError,
     UserNotExistError,
@@ -12,7 +17,7 @@ from src.transfer.user import (
     ToCreateUserDTO,
     UpdateUserDataDTO,
     UpdateUserPasswordDTO,
-    UserFullDTO, FilterUserDTO,
+    FilterUserDTO,
 )
 
 
@@ -29,7 +34,7 @@ class ValidateUserDataMixin:
 
 
 class UserService(
-    ValidateUserDataMixin
+    ValidateUserDataMixin,
 ):
 
     def __init__(self, user_repository):
@@ -48,25 +53,24 @@ class UserService(
     ) -> UserDTO:
 
         await self.validate_user_data(user_data)
-        # todo: add later hash password
         user = await self._user_repository.create(
-            convert_created_user_to_dbmodel(user_data)
+            convert_created_user_to_dbmodel(user_data, get_password_hash(user_data.password)),
         )
         return user
 
     async def get(
             self,
-            id: UUID,
+            oid: UUID,
     ) -> UserDTO | None:
-        user = await self._user_repository.get(id)
+        user = await self._user_repository.get(oid)
         if not user:
-            raise UserNotExistError(id)
+            raise UserNotExistError(oid)
         return user
 
     async def update(
             self,
-            id: UUID,
-            update_data: UpdateUserDataDTO
+            oid: UUID,
+            update_data: UpdateUserDataDTO,
     ) -> UserDTO:
         user = await self._user_repository.get(id)
         if not user:
@@ -76,14 +80,14 @@ class UserService(
 
     async def list(
             self,
-            filters: FilterUserDTO
+            filters: FilterUserDTO,
     ) -> list[UserDTO]:
         users = await self._user_repository.list(filters)
         return users
 
     async def soft_delete(
             self,
-            id: UUID,
+            oid: UUID,
     ):
         user = await self._user_repository.get(id)
         if not user:
@@ -101,19 +105,28 @@ class UserService(
         await self._user_repository.update(user_id, update_data)
         return await self.get(user_id)
 
-    async def check_password(
+    async def authenticate(
             self,
-            email: str | None,
-            username: str | None,
-            password: str
-    ) -> bool:
+            username: str,
+            password: str,
+    ) -> UserDTO | None:
 
-        if email:
-            user = await self._user_repository.get_user_by_email(email)
-        elif username:
-            user = await self._user_repository.get_user_by_username(username)
+        user = await self._user_repository.get_user_by_username(username)
+        if not user:
+            # Run the hasher to mitigate timing attack
+            # Inspired from Django: https://code.djangoproject.com/ticket/20760
+            get_password_hash(password)
+            return None
 
-        return user.password == password
+        verified, updated_password_hash = verify_password_and_update(password, user.hash_password)
+        if not verified:
+            return None
+        # Update password hash to a more robust one if needed
+        if updated_password_hash is not None:
+            await self._user_repository.update(
+                user.id, UpdateUserPasswordDTO(hash_password=updated_password_hash),
+            )
+        return user
 
 
 

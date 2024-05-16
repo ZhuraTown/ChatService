@@ -9,12 +9,12 @@ class CreateRepositoryInterfaceMixin[E, V](Protocol):
 
 class UpdateRepositoryInterfaceMixin[U, V](Protocol):
 
-    async def update(self, id: UUID, update_data: U, **kwargs) -> V: raise NotImplementedError
+    async def update(self, oid: UUID, update_data: U, **kwargs) -> V: raise NotImplementedError
 
 
 class GetRepositoryInterfaceMixin[V](Protocol):
 
-    async def get(self, id: UUID, **kwargs) -> V | None: raise NotImplementedError
+    async def get(self, oid: UUID, **kwargs) -> V | None: raise NotImplementedError
 
 
 class ListRepositoryInterfaceMixin[F, V](Protocol):
@@ -24,7 +24,7 @@ class ListRepositoryInterfaceMixin[F, V](Protocol):
 
 class DeleteRepositoryInterfaceMixin(Protocol):
 
-    async def delete(self, id: UUID, **kwargs) -> None: raise NotImplementedError
+    async def delete(self, oid: UUID, **kwargs) -> None: raise NotImplementedError
 
 
 class CountRepositoryInterfaceMixin[F](Protocol):

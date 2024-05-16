@@ -9,12 +9,12 @@ class CreateServiceInterfaceMixin[E, V](Protocol):
 
 class UpdateServiceInterfaceMixin[U, V](Protocol):
 
-    async def update(self, id: UUID, update_data: U, **kwargs) -> V: raise NotImplementedError
+    async def update(self, oid: UUID, update_data: U, **kwargs) -> V: raise NotImplementedError
 
 
 class GetServiceInterfaceMixin[V](Protocol):
 
-    async def get(self, id: UUID, **kwargs) -> V | None: raise NotImplementedError
+    async def get(self, oid: UUID, **kwargs) -> V | None: raise NotImplementedError
 
 
 class ListServiceInterfaceMixin[F, V](Protocol):
@@ -24,7 +24,7 @@ class ListServiceInterfaceMixin[F, V](Protocol):
 
 class SoftDeleteServiceInterfaceMixin(Protocol):
 
-    async def soft_delete(self, id: UUID, **kwargs) -> None: raise NotImplementedError
+    async def soft_delete(self, oid: UUID, **kwargs) -> None: raise NotImplementedError
 
 
 class CountServiceInterfaceMixin[F](Protocol):

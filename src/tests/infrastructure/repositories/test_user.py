@@ -11,14 +11,14 @@ class TestUserRepository:
     async def test_create_user(
             self,
             get_user_data: dict,
-            get_repository_user: UserRepositoryI
+            get_repository_user: UserRepositoryI,
 
     ):
         user = User(**get_user_data)
         created_user = await get_repository_user.create(user)
 
         assert created_user
-        assert created_user.id
+        assert created_user.oid
         assert created_user.email == user.email
         assert created_user.username == user.username
         assert created_user.about_me == user.about_me
@@ -27,12 +27,12 @@ class TestUserRepository:
     async def test_get_user(
             self,
             get_user: User,
-            get_repository_user: UserRepositoryI
+            get_repository_user: UserRepositoryI,
     ):
         founded_user = await get_repository_user.get(get_user.id)
 
         assert founded_user
-        assert founded_user.id
+        assert founded_user.oid
         assert founded_user.email == get_user.email
         assert founded_user.username == get_user.username
         assert founded_user.about_me == get_user.about_me
@@ -43,7 +43,7 @@ class TestUserRepository:
             self,
             get_user: User,
             get_repository_user: UserRepositoryI,
-            about_me
+            about_me,
     ):
         data = UpdateUserDataDTO(about_me=about_me)
 
@@ -57,14 +57,14 @@ class TestUserRepository:
             self,
             get_user: User,
             get_repository_user: UserRepositoryI,
-            faker: Faker
+            faker: Faker,
     ):
-        data = UpdateUserPasswordDTO(password=faker.password())
+        data = UpdateUserPasswordDTO(hash_password=faker.password())
 
         await get_repository_user.update(get_user.id, data)
         updated_user = await User.get(get_user.id)
 
-        assert updated_user.password == data.password
+        assert updated_user.hash_password == data.hash_password
 
     async def test_list_users(
             self,
@@ -81,7 +81,7 @@ class TestUserRepository:
     async def test_delete_user(
             self,
             get_user: User,
-            get_repository_user: UserRepositoryI
+            get_repository_user: UserRepositoryI,
     ):
         deleted_user = await get_repository_user.delete(get_user.id)
 
@@ -90,7 +90,7 @@ class TestUserRepository:
     async def test_soft_delete_user(
             self,
             get_user: User,
-            get_repository_user: UserRepositoryI
+            get_repository_user: UserRepositoryI,
     ):
         deleted_user = await get_repository_user.delete(get_user.id)
         user_from_db = await User.get(get_user.id)
@@ -101,7 +101,7 @@ class TestUserRepository:
     async def test_get_user_by_email(
             self,
             get_user: User,
-            get_repository_user: UserRepositoryI
+            get_repository_user: UserRepositoryI,
     ):
         founded_user = await get_repository_user.get_user_by_email(get_user.email)
 
@@ -112,7 +112,7 @@ class TestUserRepository:
     async def test_get_user_by_username(
             self,
             get_user: User,
-            get_repository_user: UserRepositoryI
+            get_repository_user: UserRepositoryI,
     ):
         founded_user = await get_repository_user.get_user_by_username(get_user.username)
 

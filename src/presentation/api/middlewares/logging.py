@@ -35,9 +35,9 @@ class RequestLogMiddleware(BaseHTTPMiddleware):
                 status_code=status.HTTP_400_BAD_REQUEST,
                 content={"error": "Client Error", "message": str(e.message)},
             )
-        except Exception as e:
-            app_logger.error(f"Exception - {e.__class__.__name__}, Detail - {e}")
-            return JSONResponse(
-                status_code=500,
-                content={"error": "Internal Server Error"},
-            )
+        # except Exception as e:
+        #     app_logger.error(f"Exception - {e.__class__.__name__}, Detail - {e}")
+        #     return JSONResponse(
+        #         status_code=500,
+        #         content={"error": "Internal Server Error"},
+        #     )

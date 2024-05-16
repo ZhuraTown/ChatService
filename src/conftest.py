@@ -22,8 +22,8 @@ def get_database_url():
                 settings.infrastructure.db_password,
                 settings.infrastructure.db_host,
                 settings.infrastructure.db_port,
-                settings.infrastructure.db_name
-            ]
+                settings.infrastructure.db_name,
+            ],
         )
 
     return "mongodb://{}:{}/{}".format(
@@ -31,11 +31,11 @@ def get_database_url():
                 settings.infrastructure.db_host,
                 settings.infrastructure.db_port,
                 settings.infrastructure.db_name,
-            ]
+            ],
         )
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 async def init_db():
     client = AsyncIOMotorClient(get_database_url())
     client.get_io_loop = asyncio.get_event_loop

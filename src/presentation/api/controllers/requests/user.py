@@ -33,13 +33,13 @@ class GetUserFilterRequest(BaseModel):
     def convert_to_dto(
             self,
             limit: int | None = None,
-            offset: int | None = None
+            offset: int | None = None,
     ) -> FilterUserDTO:
         return FilterUserDTO(limit=limit, offset=offset, search=self.search)
 
 
 def get_user_filters(
-        search: str | None = None
+        search: str | None = None,
 
 ) -> GetUserFilterRequest:
     return GetUserFilterRequest(search=search)

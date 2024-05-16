@@ -8,8 +8,10 @@ from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 from presentation.api.middlewares.logging import RequestLogMiddleware
 from src.infrastructure.db.models import User
-from src.presentation.api.controllers.user import router as user_router
 from src.presentation.api.config import api_settings
+
+from src.presentation.api.controllers.user import router as user_router
+from src.presentation.api.controllers.auth import router as auth_router
 
 from src.config import settings
 
@@ -38,6 +40,7 @@ app = FastAPI(title="chat", version="1.0.0", middleware=MIDDLEWARES, lifespan=li
 
 ROUTERS = [
     user_router,
+    auth_router,
 ]
 
 for router in ROUTERS:
@@ -45,15 +48,13 @@ for router in ROUTERS:
 
 
 def main():
-    print("FastAPI starting...")
-    # app_logger.info("FastAPI starting...")
     uvicorn.run(
         "presentation.api.main:app",
         host=api_settings.HOST,
         port=api_settings.PORT,
         reload=api_settings.RELOAD,
         workers=api_settings.WORKERS,
-        log_level="warning",
+        log_level="info",
     )
 
 

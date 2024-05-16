@@ -15,16 +15,16 @@ class UserRepositoryI(
     GetRepositoryInterfaceMixin[UserDTO],
     ListRepositoryInterfaceMixin[FilterUserDTO, UserDTO],
     DeleteRepositoryInterfaceMixin,
-    CountRepositoryInterfaceMixin
+    CountRepositoryInterfaceMixin,
 ):
     async def get_user_by_email(
             self,
-            email: str
+            email: str,
     ) -> UserFullDTO | None:
         raise NotImplementedError
 
     async def get_user_by_username(
             self,
-            username: str
+            username: str,
     ) -> UserFullDTO | None:
         raise NotImplementedError

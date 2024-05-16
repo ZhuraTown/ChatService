@@ -6,7 +6,7 @@ from fastapi.exceptions import ValidationException
 
 @dataclass
 class UserNotExistError(ValidationException):
-    id: UUID
+    oid: UUID
 
     @property
     def message(self) -> str:

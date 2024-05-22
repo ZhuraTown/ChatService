@@ -1,0 +1,52 @@
+name: Tests
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+    branches:
+      - master
+      - development
+      - production
+
+jobs:
+
+  tests:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONUNBUFFERED: 1
+      PYTHONDONTWRITEBYTECODE: 1
+      DB_NAME: chat
+      DB_USER: root
+      DB_PASSWORD: example
+      DB_HOST: 127.0.0.1
+      DB_PORT: 27017
+
+    services:
+      mongo_checkpoints:
+        image: mongo:latest
+        env:
+          ME_CONFIG_MONGODB_ADMINUSERNAME: root
+          ME_CONFIG_MONGODB_ADMINPASSWORD: example
+          ME_CONFIG_BASICAUTH: false
+        ports:
+          - 127.0.0.1:27017:27017
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.12.2
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Poetry install dependencies
+        run: |
+          pip install --upgrade pip setuptools wheel poetry && \
+          poetry config virtualenvs.create false && \
+          poetry install
+
+      - name: Run tests
+        run: | 
+          cd src && \
+          python -m pytest

@@ -22,8 +22,8 @@ jobs:
       PYTHONUNBUFFERED: 1
       PYTHONDONTWRITEBYTECODE: 1
       DB_NAME: chat
-      DB_USER: root
-      DB_PASSWORD: example
+      DB_USER: ""
+      DB_PASSWORD: ""
       DB_HOST: 127.0.0.1
       DB_PORT: 27017
 
@@ -31,8 +31,8 @@ jobs:
       mongo_checkpoints:
         image: mongo:latest
         env:
-          ME_CONFIG_MONGODB_ADMINUSERNAME: root
-          ME_CONFIG_MONGODB_ADMINPASSWORD: example
+          ME_CONFIG_MONGODB_ADMINUSERNAME: ""
+          ME_CONFIG_MONGODB_ADMINPASSWORD: ""
           ME_CONFIG_BASICAUTH: false
         ports:
           - 127.0.0.1:27017:27017

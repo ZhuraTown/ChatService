@@ -3,7 +3,10 @@ from datetime import datetime, UTC
 
 from beanie.odm.operators.update.general import Set
 
-from users.infrastructure.db.convertors.user import convert_user_dbmodel_to_dto, convert_user_dbmodel_to_full_dto
+from users.infrastructure.db.convertors.user import (
+    convert_user_dbmodel_to_dto,
+    convert_user_dbmodel_to_full_dto
+)
 from users.infrastructure.db.models.users import User
 from users.transfer.user import UserDTO, UpdateUserDTO, FilterUserDTO
 

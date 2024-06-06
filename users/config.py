@@ -27,21 +27,6 @@ class InfrastructureSettings(BaseSettings):
             path=info.data["db_name"],
         )
 
-    # REDIS CONFIG
-    # redis_host: str
-    # redis_port: int
-    # redis_db: str
-    # redis_dsn: RedisDsn | None = None
-    #
-    # @field_validator('redis_dsn', mode='before')  # noqa
-    # @classmethod
-    # def get_redis_dsn(cls, _, info: ValidationInfo):
-    #     return RedisDsn.build(
-    #         scheme='redis',
-    #         host=info.data['redis_host'],
-    #         port=info.data['redis_port'],
-    #         path=info.data['redis_db'],
-    #     )
 
 
 class Settings(BaseSettings):

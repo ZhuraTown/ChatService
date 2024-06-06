@@ -2,7 +2,8 @@ from typing import Optional
 from uuid import UUID
 
 from pydantic import EmailStr
-from users.presentation.api import BaseResponse
+
+from presentation.api.controllers import BaseResponse
 from transfer.user import UserDTO
 
 

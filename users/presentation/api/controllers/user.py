@@ -4,15 +4,15 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from users.application.services.interfaces.user import UserServiceI
-from users.presentation.api import lo_paginator, LimitOffsetPaginator, PaginatedResponse
-from users.presentation.api import (
+from application.services.interfaces.user import UserServiceI
+from presentation.api.controllers import PaginatedResponse, lo_paginator, LimitOffsetPaginator
+from users.presentation.api.controllers.requests.user import (
     CreateUserRequest,
     get_user_filters,
     GetUserFilterRequest,
     UpdateUserRequest,
 )
-from users.presentation.api.controllers.responses import UserResponse
+from users.presentation.api.controllers.responses.user import UserResponse
 from users.presentation.api.deps.auth import get_current_user
 from users.presentation.api.deps.services import get_user_service
 from transfer.user import UserDTO

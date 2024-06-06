@@ -3,11 +3,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
+from presentation.api.controllers.requests.auth import RefreshTokenRequest
+from presentation.api.controllers.responses.auth import AuthResponse
 from users.application.auth.jwt import create_access_token, decode_jwt
 from users.application.services.interfaces.user import UserServiceI
 from enums import TokenTypes
-from users.presentation.api import RefreshTokenRequest
-from users.presentation.api.controllers.responses import AuthResponse
 from users.presentation.api.deps.services import get_user_service
 
 router = APIRouter(

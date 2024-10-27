@@ -1,51 +1,36 @@
-from dotenv import load_dotenv
-from pydantic import field_validator, MongoDsn
-from pydantic_core.core_schema import ValidationInfo
-from pydantic_settings import BaseSettings
+from typing import Sequence
 
-load_dotenv()
+from dotenv import load_dotenv, find_dotenv
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+load_dotenv(find_dotenv(".env"))
 
 
 class InfrastructureSettings(BaseSettings):
-    # MONGO CONFIG
+
     db_user: str
     db_password: str
     db_name: str
     db_host: str
     db_port: int
-    mongo_dsn: MongoDsn | None = None
-
-    @field_validator("mongo_dsn", mode="before")  # noqa
-    @classmethod
-    def get_mongo_dsn(cls, _, info: ValidationInfo):
-        return MongoDsn.build(
-            scheme="mongodb",
-            username=info.data["db_user"],
-            password=info.data["db_password"],
-            host=info.data["db_host"],
-            port=info.data["db_port"],
-            path=info.data["db_name"],
-        )
-
-    # REDIS CONFIG
-    # redis_host: str
-    # redis_port: int
-    # redis_db: str
-    # redis_dsn: RedisDsn | None = None
-    #
-    # @field_validator('redis_dsn', mode='before')  # noqa
-    # @classmethod
-    # def get_redis_dsn(cls, _, info: ValidationInfo):
-    #     return RedisDsn.build(
-    #         scheme='redis',
-    #         host=info.data['redis_host'],
-    #         port=info.data['redis_port'],
-    #         path=info.data['redis_db'],
-    #     )
 
 
-class Settings(BaseSettings):
+class APISettings(BaseSettings):
+
+    API_HOST: str = "0.0.0.0"
+    API_PORT: int = 8000
+    API_RELOAD: bool = False
+    API_DEBUG: bool = False
+    API_WORKERS: int = 4
+    API_ALLOWED_HOSTS: Sequence[str] = ["*"]
+    API_VERSION: float | int = 0.0
+
+
+class AppSettings(BaseSettings):
     infrastructure: InfrastructureSettings = InfrastructureSettings()
+    api_settings: APISettings = APISettings()
+    debug: bool = False
 
 
-settings = Settings()
+settings = AppSettings()

@@ -18,19 +18,19 @@ class InfrastructureSettings(BaseSettings):
 
 class APISettings(BaseSettings):
 
-    HOST: str = "0.0.0.0"
-    PORT: int = 8000
-    RELOAD: bool = False
-    DEBUG: bool = False
-    WORKERS: int = 4
-    ALLOWED_HOSTS: Sequence[str] = ["*"]
-
+    API_HOST: str = "0.0.0.0"
+    API_PORT: int = 8000
+    API_RELOAD: bool = False
+    API_DEBUG: bool = False
+    API_WORKERS: int = 4
+    API_ALLOWED_HOSTS: Sequence[str] = ["*"]
+    API_VERSION: float | int = 0.0
 
 
 class AppSettings(BaseSettings):
     infrastructure: InfrastructureSettings = InfrastructureSettings()
     api_settings: APISettings = APISettings()
-
+    debug: bool = False
 
 
 settings = AppSettings()

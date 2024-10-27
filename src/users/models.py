@@ -1,11 +1,46 @@
-from typing import Optional, TYPE_CHECKING
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from sqlmodel import SQLModel, Field
 
 
-class User(SQLModel, table=True):
-    id: Optional[UUID] = Field(primary_key=True, default=None)
+__all__ = [
+    "User",
+    "UserRead",
+    "UserCreate",
+]
+
+from src.db.mixin import TimestampMixin, OIDMixin
+
+
+class UserBase(SQLModel):
     email: str | None = Field(None, min_length=2, max_length=100)
-    username: str
+    username: str = Field(unique=True)
     name: str | None = Field(None, min_length=2, max_length=100)
+
+
+class HashPassword(SQLModel):
+    hash_password: str
+
+
+class CreatePassword(SQLModel):
+    password: str = Field(min_length=6, max_length=128)
+
+
+class User(
+    OIDMixin,
+    TimestampMixin,
+    UserBase,
+    HashPassword,
+    table=True
+):
+    pass
+
+
+class UserCreate(UserBase, CreatePassword):
+    email: str | None = Field(None, min_length=2, max_length=100)
+    username: str = Field(unique=True)
+    name: str | None = Field(None, min_length=2, max_length=100)
+
+
+class UserRead(UserBase):
+    id: UUID

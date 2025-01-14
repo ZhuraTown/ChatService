@@ -1,17 +1,15 @@
 [tool.poetry]
 name = "chat-fastapi-mongodb"
 version = "0.1.0"
-description = "Chat stack: FastAPI, MongoDB"
+description = "Chat by fast api websokets"
 authors = ["ZhuraTown <Swiglek@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "3.12"
+python = "~3.12"
 fastapi = "0.111.0"
 pydantic = "2.7.1"
-motor = {extras = ["srv"], version = "3.4.0"}
 pydantic-settings = "2.2.1"
-beanie = "1.26.0"
 faker = "25.0.1"
 websockets = "12.0"
 pytest = "8.2.0"
@@ -19,7 +17,17 @@ pytest-asyncio = "0.23.6"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 argon2-cffi = "^23.1.0"
-ruff = "^0.4.4"
+ruff = "0.4.4"
+jinja2 = "^3.1.5"
+bcrypt = "4.1.2"
+fastapi-users = {extras = ["sqlalchemy"], version = "^14.0.0"}
+sqlalchemy = "^2.0.36"
+alembic = "^1.14.0"
+asyncpg = "^0.30.0"
+uvicorn = "^0.34.0"
+aioredis = "^2.0.1"
+sqlalchemy-filterset = "^2.3.0"
+pytz = "^2024.2"
 
 
 [build-system]

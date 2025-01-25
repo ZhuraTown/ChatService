@@ -1,5 +1,8 @@
 from datetime import datetime
-from sqlalchemy import Integer, ForeignKey, Text, Boolean, String, DateTime, Enum, PrimaryKeyConstraint
+
+import pytz
+from sqlalchemy import Integer, ForeignKey, Text, Boolean, String, DateTime, Enum, PrimaryKeyConstraint, func, \
+    UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from common.enums import ChatType
@@ -16,6 +19,7 @@ class Message(DateTimeMixin):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     sender_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    chat_id: Mapped[int] = mapped_column(Integer, ForeignKey("chats.id"))
     recipient_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
     content: Mapped[str] = mapped_column(Text)
 
@@ -40,9 +44,18 @@ class Message(DateTimeMixin):
 
 class ChatParticipants(Base):
     __tablename__ = "chat_participants"
+    __table_args__ = (
+        UniqueConstraint("chat_id", "user_id"),
+    )
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, primary_key=True)
     chat_id: Mapped[int] = mapped_column(ForeignKey("chats.id"), nullable=False, primary_key=True)
-    joined_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    joined_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.timezone(
+            str(pytz.UTC),
+            func.current_timestamp(),
+        ),
+    )
 
 
 class Chat(DateTimeMixin):
@@ -52,7 +65,7 @@ class Chat(DateTimeMixin):
     name: Mapped[str] = mapped_column(String, nullable=True)
     is_private: Mapped[bool] = mapped_column(Boolean, default=False)
     about: Mapped[str] = mapped_column(Text, nullable=True)
-    type_chat: Mapped[ChatType] = mapped_column(Enum(ChatType), nullable=False)
+    type: Mapped[ChatType] = mapped_column(Enum(ChatType), nullable=False)
 
     participants: Mapped[list['User']] = relationship(
         "User",

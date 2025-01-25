@@ -20,6 +20,16 @@ class UserWithEmailExists(ToClientException):
 
 
 @dataclass
+class UsersNotFound(ToClientException):
+    errors = "Переданы несуществующие пользователи"
+
+
+@dataclass
+class UserNotBelongChat(ToClientException):
+    errors = "У пользователя нет доступа к чату"
+
+
+@dataclass
 class IncorrectEmailOrPasswordException(ToClientException):
     errors: str = "Неверная почта или пароль"
 

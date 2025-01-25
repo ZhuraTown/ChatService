@@ -1,7 +1,7 @@
 import enum
 
 
-class ChatType(enum.Enum):
+class ChatType(str, enum.Enum):
     DIRECT = "direct"
     GROUP = "group"
 

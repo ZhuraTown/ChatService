@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Request, Depends
-from fastapi.responses import HTMLResponse
+from http import HTTPStatus
+
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.templating import Jinja2Templates
 from typing import Annotated
 
-from starlette.websockets import WebSocket
-
+from chat.dependency import get_chat_service
+from chat.schemas import CreateChatSchemaRequest, ChatResponseSchema, AddParticipantsChatSchemaRequest
+from chat.service import ChatService
 from db.orm import User
 from users.dependency import get_current_user
 
@@ -24,17 +26,61 @@ templates = Jinja2Templates(directory='templates')
 #         await websocket.send_json(message)
 
 
-# todo: add route create group  chat
-# todo: add route create direct chat
-# todo: add route
+# todo: add route delete chat
+# todo: add route get chat_lists
+@router.post(
+    '',
+    description="Create chat",
+    status_code=HTTPStatus.CREATED,
+)
+async def create_chat(
+        new_chat: CreateChatSchemaRequest,
+        service: Annotated[ChatService, Depends(get_chat_service)],
+        auth_user: Annotated[User, Depends(get_current_user)]
+):
+    created_chat = await service.create_chat(new_chat, auth_user.id)
+    return ChatResponseSchema.model_validate(created_chat)
 
-@router.websocket('/')
-async def chat(websocket: WebSocket):
-    await websocket.accept()
-    while True:
-        data = await websocket.receive_json()
-        print(data)
-        await websocket.send_json({"message": "Message received!"})
+
+@router.delete(
+    "/{chat_id}",
+    description="Delete chat",
+    status_code=HTTPStatus.NO_CONTENT,
+)
+async def delete_chat(
+        chat_id: int,
+        auth_user: Annotated[User, Depends(get_current_user)],
+        service: Annotated[ChatService, Depends(get_chat_service)],
+):
+    if not await service.get_chat(chat_id):
+        raise HTTPException(detail="Chat not found", status_code=HTTPStatus.NOT_FOUND)
+    await service.delete_chat(chat_id, auth_user.id)
+
+
+@router.patch(
+    "/{chat_id}/participants",
+    description="add participants",
+    status_code=HTTPStatus.OK,
+)
+async def add_participants(
+        chat_id: int,
+        data: AddParticipantsChatSchemaRequest,
+        auth_user: Annotated[User, Depends(get_current_user)],
+        service: Annotated[ChatService, Depends(get_chat_service)],
+):
+    if not await service.get_chat(chat_id):
+        raise HTTPException(detail="Chat not found", status_code=HTTPStatus.NOT_FOUND)
+    await service.add_participants(chat_id, auth_user.id, data.participants)
+
+
+#
+# @router.websocket('/')
+# async def chat(websocket: WebSocket):
+#     await websocket.accept()
+#     while True:
+#         data = await websocket.receive_json()
+#         print(data)
+#         await websocket.send_json({"message": "Message received!"})
 
 
 #

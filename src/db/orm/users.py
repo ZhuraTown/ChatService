@@ -25,7 +25,7 @@ class User(DateTimeMixin):
     sent_messages: Mapped[list['Message']] = relationship(
         "Message",
         back_populates="sender",
-        foreign_keys="Message.sender_id"
+        foreign_keys="Message.sender_id",
     )
     received_messages: Mapped[list['Message']] = relationship(
         "Message", back_populates="recipient", foreign_keys="Message.recipient_id"

@@ -1,8 +1,8 @@
-"""Create Chat models
+"""create tables Users, Chats
 
-Revision ID: b5831942bfe3
-Revises: 8830a341f2b9
-Create Date: 2025-01-14 10:54:13.532968
+Revision ID: 5dc8f37d0392
+Revises: 
+Create Date: 2025-01-14 16:44:22.286168
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'b5831942bfe3'
-down_revision: Union[str, None] = '8830a341f2b9'
+revision: str = '5dc8f37d0392'
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -25,24 +25,36 @@ def upgrade() -> None:
     sa.Column('name', sa.String(), nullable=True),
     sa.Column('is_private', sa.Boolean(), nullable=False),
     sa.Column('about', sa.Text(), nullable=True),
-    sa.Column('type_chat', sa.Enum('DIRECT', 'GROUP', name='chattype'), nullable=False),
+    sa.Column('type', sa.Enum('DIRECT', 'GROUP', name='chattype'), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text("timezone('UTC', CURRENT_TIMESTAMP)"), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_chats_id'), 'chats', ['id'], unique=False)
+    op.create_table('users',
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('name', sa.String(), nullable=False),
+    sa.Column('hashed_password', sa.String(), nullable=False),
+    sa.Column('email', sa.String(), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text("timezone('UTC', CURRENT_TIMESTAMP)"), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('chat_participants',
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('chat_id', sa.Integer(), nullable=False),
-    sa.Column('joined_at', sa.DateTime(), nullable=False),
+    sa.Column('joined_at', sa.DateTime(timezone=True), server_default=sa.text("timezone('UTC', CURRENT_TIMESTAMP)"), nullable=False),
     sa.ForeignKeyConstraint(['chat_id'], ['chats.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('user_id', 'chat_id')
+    sa.PrimaryKeyConstraint('user_id', 'chat_id'),
+    sa.UniqueConstraint('chat_id', 'user_id')
     )
     op.create_table('messages',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('sender_id', sa.Integer(), nullable=False),
+    sa.Column('chat_id', sa.Integer(), nullable=False),
     sa.Column('recipient_id', sa.Integer(), nullable=False),
     sa.Column('content', sa.Text(), nullable=False),
     sa.Column('is_sent', sa.Boolean(), nullable=False),
@@ -51,6 +63,7 @@ def upgrade() -> None:
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text("timezone('UTC', CURRENT_TIMESTAMP)"), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
+    sa.ForeignKeyConstraint(['chat_id'], ['chats.id'], ),
     sa.ForeignKeyConstraint(['recipient_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['sender_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -64,6 +77,8 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_messages_id'), table_name='messages')
     op.drop_table('messages')
     op.drop_table('chat_participants')
+    op.drop_table('users')
     op.drop_index(op.f('ix_chats_id'), table_name='chats')
     op.drop_table('chats')
+    op.execute("DROP TYPE chattype")
     # ### end Alembic commands ###

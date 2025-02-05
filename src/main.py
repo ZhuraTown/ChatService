@@ -11,6 +11,7 @@ from common.exceptions import (
 )
 from users.router import (users_router, users_api_router)
 from chat.router import router as chat_router
+from chat.websockets import router as websocket_router
 
 app = FastAPI()
 app.mount('/static', StaticFiles(directory='static'), name='static')
@@ -26,7 +27,8 @@ app.add_middleware(
 ROUTES = [
     users_router,
     users_api_router,
-    chat_router
+    chat_router,
+    websocket_router,
 ]
 
 for route in ROUTES:

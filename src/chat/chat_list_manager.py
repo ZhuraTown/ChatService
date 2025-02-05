@@ -60,3 +60,4 @@ class ChatListConnectionManager:
                 event="error",
                 websocket=websocket
             )
+

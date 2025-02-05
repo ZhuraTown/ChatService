@@ -37,7 +37,7 @@ class CreateChatSchemaRequest(BaseModel):
 class AddParticipantsChatSchemaRequest(BaseModel):
     participants: list[int] = Field(..., min_length=1)
 
-    @field_validator("type")
+    @field_validator("participants")
     def type_unique(cls, value: list[int]):
         if len(value) != len(set(value)):
             raise ValueError("Переданы дубликаты")
@@ -56,3 +56,7 @@ class ChatResponseSchema(BaseModel):
 class ChatParticipantsFilters(BaseModel):
     chat_id: Optional[int] = None
     user_id__in: Optional[list[int]] = None
+
+
+class MessageSchema(BaseModel):
+    message: str

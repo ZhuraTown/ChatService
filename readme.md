@@ -1,5 +1,7 @@
 ChatService:
 
-Chat
-Users
-Notifications
+Stack:
+- FastAPI 
+- SQLAlchemy
+- WebSockets
+

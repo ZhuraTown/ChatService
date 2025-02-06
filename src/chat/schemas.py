@@ -1,21 +1,23 @@
 from datetime import datetime
 from typing import Self, Optional
 
-from pydantic import BaseModel, Field, model_validator, ValidationError, field_validator
+from pydantic import BaseModel, Field, model_validator, ValidationError, field_validator, ConfigDict
 
 from common.enums import ChatType
 
 
+class UserRead(BaseModel):
+    id: int
+    name: str
+    model_config = ConfigDict(extra="allow", from_attributes=True)
+
 class MessageRead(BaseModel):
-    id: int = Field(..., description="Уникальный идентификатор сообщения")
-    sender_id: int = Field(..., description="ID отправителя сообщения")
-    recipient_id: int = Field(..., description="ID получателя сообщения")
-    content: str = Field(..., description="Содержимое сообщения")
-
-
-class MessageCreate(BaseModel):
-    recipient_id: int = Field(..., description="ID получателя сообщения")
-    content: str = Field(..., description="Содержимое сообщения")
+    id: int
+    sender_id: int
+    content: str
+    created_at: datetime
+    sender: UserRead
+    model_config = ConfigDict(extra="allow", from_attributes=True)
 
 
 class CreateChatSchemaRequest(BaseModel):
@@ -58,5 +60,13 @@ class ChatParticipantsFilters(BaseModel):
     user_id__in: Optional[list[int]] = None
 
 
-class MessageSchema(BaseModel):
-    message: str
+class EventSchema(BaseModel):
+    content: str
+    model_config = ConfigDict(extra="allow", from_attributes=True)
+
+
+class ParticipantSchema(BaseModel):
+    id: int
+    name: str
+    model_config = ConfigDict(extra="allow", from_attributes=True)
+

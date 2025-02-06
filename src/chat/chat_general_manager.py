@@ -4,27 +4,41 @@ from pydantic import ValidationError
 from starlette.websockets import WebSocket
 from fastapi import status
 
-from chat.schemas import MessageSchema
+from chat.schemas import EventSchema, ParticipantSchema, MessageRead
+from chat.service import ChatService
 from db.orm import User
 from logger import logger
 
 
 class ChatGeneralManager:
+    system_author: str = "System"
+    chat_id: int = 1
 
     def __init__(self):
         self.active_connections: dict = {}
-        self.messages: list = []
 
     async def connect(
             self,
             websocket: WebSocket,
             current_user: User,
+            chat_service: ChatService,
     ):
         await websocket.accept()
+        participants = await chat_service.list_participants(self.chat_id)
+        if current_user not in participants:
+            await chat_service.create_participants(self.chat_id, [current_user.id])
+            await chat_service.uow.commit()
+            participants.append(current_user)
         self.active_connections[current_user.id] = (websocket, current_user)
-        self.messages.append({"message": f"Hello {current_user.name}!", "author": "System"})
-        last_messages = self.messages[-10:]
-        data = {"messages": last_messages}
+        last_messages = await chat_service.list_messages(
+            self.chat_id, limit=10, offset=0
+        )
+        data = {
+            "messages": [MessageRead.parse_obj(m).model_dump(mode='json') for m in last_messages],
+            "participants": [
+                (ParticipantSchema.parse_obj(p)).model_dump(mode='json') for p in participants
+            ]
+        }
         await self._send_message(data, status=1000, websocket=websocket)
 
     @staticmethod
@@ -34,10 +48,12 @@ class ChatGeneralManager:
 
     async def receive_message(self,
                               data: dict,
-                              websocket: WebSocket
+                              websocket: WebSocket,
+                              user: User,
+                              chat_service: ChatService
                               ):
         try:
-            event_message: MessageSchema = MessageSchema.model_validate(data)
+            event_message: EventSchema = EventSchema.model_validate(data)
         except ValidationError as e:
             logger.warning(f"Invalid json schema format was obtained from: {e}")
             await self._send_message(
@@ -46,10 +62,13 @@ class ChatGeneralManager:
                 websocket=websocket
             )
         else:
-            message = event_message.model_dump(mode='json')
-            message['author'] = 'Some user'
-            self.messages.append(message)
-            await self.broadcast_message(message)
+            message = await chat_service.create_message(
+                self.chat_id, event_message.content, user.id
+            )
+            message.sender = user
+            await self.broadcast_message(
+                MessageRead.parse_obj(message).model_dump(mode='json')
+            )
 
     async def broadcast_message(self, message: dict):
         for user_id, connection_data in self.active_connections.items():
@@ -57,8 +76,5 @@ class ChatGeneralManager:
             websocket, user = connection_data
             await self._send_message(message, status=1000, websocket=websocket)
 
-    async def disconnect(self, current_user: User,  websocket: WebSocket):
-        message = {"message": f"{current_user.name} bye-bye!", "author": "System"}
-        self.messages.append(message)
+    async def disconnect(self, current_user: User):
         self.active_connections.pop(current_user.id, None)
-        await self.broadcast_message(message)

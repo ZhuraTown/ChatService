@@ -20,7 +20,7 @@ class Message(DateTimeMixin):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     sender_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
     chat_id: Mapped[int] = mapped_column(Integer, ForeignKey("chats.id"))
-    recipient_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    recipient_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("users.id"), default=None, nullable=True)
     content: Mapped[str] = mapped_column(Text)
 
     is_sent: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)

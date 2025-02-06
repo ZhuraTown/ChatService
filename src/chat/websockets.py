@@ -4,7 +4,8 @@ from fastapi import APIRouter, Depends
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
 from chat.chat_general_manager import ChatGeneralManager
-from chat.dependency import auth_user
+from chat.dependency import auth_user, get_chat_service
+from chat.service import ChatService
 from db.orm import User
 
 router = APIRouter(
@@ -39,11 +40,12 @@ manager_general = ChatGeneralManager()
 async def general(
         websocket: WebSocket,
         current_user: Annotated[User, Depends(auth_user)],
+        chat_service: Annotated[ChatService, Depends(get_chat_service)]
 ):
-    await manager_general.connect(websocket, current_user)
+    await manager_general.connect(websocket, current_user, chat_service)
     try:
         while True:
             data = await websocket.receive_json()
-            await manager_general.receive_message(data, websocket)
+            await manager_general.receive_message(data, websocket, current_user, chat_service)
     except WebSocketDisconnect:
-        await manager_general.disconnect(current_user, websocket)
+        await manager_general.disconnect(current_user)

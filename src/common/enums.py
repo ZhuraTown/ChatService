@@ -6,8 +6,8 @@ class ChatType(str, enum.Enum):
     GROUP = "group"
 
 
-class ChatAction(str, enum.Enum):
-    CREATE_CHAT = "create_chat"
-    GET_CHAT = "get_chat"
-    SEND_MESSAGE = "send_message"
-    GET_CHAT_HISTORY = "get_chat_history"
+class EventType(str, enum.Enum):
+    SEND_MESSAGE = "SEND_MESSAGE"
+    LIST_MESSAGES = "LIST_MESSAGES"
+    DELETE_MESSAGE = "DELETE_MESSAGE"
+    UPDATE_MESSAGE = "UPDATE_MESSAGE"

@@ -28,6 +28,7 @@ uvicorn = "^0.34.0"
 aioredis = "^2.0.1"
 sqlalchemy-filterset = "^2.3.0"
 pytz = "^2024.2"
+click = "^8.1.8"
 
 
 [build-system]

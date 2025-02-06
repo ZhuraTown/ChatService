@@ -1,11 +1,12 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import select
+from sqlalchemy import select, desc
 from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.orm import joinedload
 
-from db.filter_sets.chats import ChatsFilterSet
-from db.orm import Chat, Message, ChatParticipants
+from db.filter_sets.chats import ChatsFilterSet, MessageChatsFilterSet
+from db.orm import Chat, Message, ChatParticipants, User
 from db.repository.create_update_mixin import CreateUpdateMixin
 from db.repository.list_mixin import ListMixin
 from db.repository.retrieve_mixin import RetrieveMixin
@@ -59,10 +60,34 @@ class ChatRepository(
         results = (await self.session.execute(query)).unique().scalars().all()
         return results
 
+    async def list_participants(
+            self,
+            chat_id: int
+    ) -> list[User]:
+        participants_subquery = select(ChatParticipants.user_id).where(ChatParticipants.chat_id == chat_id)
+        query = select(User).where(User.id.in_(participants_subquery))
+        result = await self.session.scalars(query)
+        return result.all()
 
-class MessageRepo(
+
+class MessageRepository(
     CreateUpdateMixin[Message],
-    ListMixin[Message, ChatsFilterSet],
 ):
     model = Message
-    filter_set = ChatsFilterSet
+    filter_set = MessageChatsFilterSet
+
+    async def list_messages(
+            self,
+            chat_id: int,
+            limit: int = 10,
+            offset: int = 0,
+    ) -> list[Message]:
+        messages = await self.session.scalars(
+            select(Message)
+            .where(Message.chat_id == chat_id)
+            .options(
+                joinedload(Message.sender)
+            ).limit(limit).offset(offset)
+            .order_by(desc(Message.created_at))
+        )
+        return messages.all()

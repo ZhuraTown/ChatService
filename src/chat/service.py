@@ -1,12 +1,12 @@
 from datetime import datetime
 from typing import List, Optional
 
-from chat.repo import ChatRepository
+from chat.repo import ChatRepository, MessageRepository
 from chat.schemas import CreateChatSchemaRequest, ChatParticipantsFilters
 from common.exceptions import UsersNotFound, UserNotBelongChat
 from common.uow import SQLAlchemyUoW
 from db.filter_sets.chats import ChatParticipantsFilterSet
-from db.orm import Chat
+from db.orm import Chat, User, Message
 from users.repo import UserRepository
 from users.schemas import UsersFilters
 
@@ -41,11 +41,11 @@ class ChatService:
             uow: SQLAlchemyUoW
     ):
         self.user_repo: UserRepository = user_repo
-        self.message_repo = message_repo
+        self.message_repo: MessageRepository = message_repo
         self.chat_repo: ChatRepository = chat_repo
         self.uow = uow
 
-    async def _create_participants(
+    async def create_participants(
             self,
             chat_id: int,
             participants: list[int],
@@ -57,11 +57,23 @@ class ChatService:
             chat_created_at
         )
 
+    async def list_participants(
+            self,
+            chat_id: int,
+    ) -> list[User]:
+        return await self.chat_repo.list_participants(chat_id)
+
     async def get_chat(
             self,
             oid: int
     ) -> Chat:
         return await self.chat_repo.find_by_id(oid)
+
+    async def get_chat_by(
+            self,
+            filter_by: dict
+    ) -> Chat | None:
+        return await self.chat_repo.find_by(filter_by)
 
     async def create_chat(
             self,
@@ -99,7 +111,7 @@ class ChatService:
     ):
         await self._user_belong_participants_chat(chat_oid, [user])
 
-        await self._create_participants(chat_oid, participants)
+        await self.create_participants(chat_oid, participants)
         await self.uow.commit()
 
     async def list_chats_user(
@@ -108,3 +120,22 @@ class ChatService:
     ):
         return await self.chat_repo.list_chat_user(user_id)
 
+    async def create_message(
+            self,
+            chat_id: int,
+            content: str,
+            sender_id: int
+    ) -> Message:
+        message = await self.message_repo.create(
+            {"chat_id": chat_id, "sender_id": sender_id, "content": content}
+        )
+        await self.uow.commit()
+        return message
+
+    async def list_messages(
+            self,
+            chat_id: int,
+            limit: int,
+            offset: int,
+    ) -> list[Message]:
+        return await self.message_repo.list_messages(chat_id, limit, offset)

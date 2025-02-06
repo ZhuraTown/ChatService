@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 from pydantic import ValidationError
 from starlette.websockets import WebSocket
 from fastapi import status
@@ -11,7 +9,6 @@ from logger import logger
 
 
 class ChatGeneralManager:
-    system_author: str = "System"
     chat_id: int = 1
 
     def __init__(self):

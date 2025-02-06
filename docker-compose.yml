@@ -1,0 +1,56 @@
+version: '3.9'
+
+x-settings: &global
+  environment:
+    - SECRET_KEY=${SECRET_KEY}
+    - ALGORITHM=${ALGORITHM}
+    - DB_USER=${DB_USER}
+    - DB_PASSWORD=${DB_PASSWORD}
+    - DB_NAME=${DB_NAME}
+    - DB_PORT=${DB_PORT}
+
+services:
+
+  db:
+    container_name: chat-db
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_PORT=${DB_PORT}
+    healthcheck:
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U ${DB_USER} -d ${DB_NAME}'" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  chat:
+    container_name: chat-api
+    build: .
+    restart: always
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_HOST=chat-db
+      - DB_PORT=${DB_PORT}
+      - API_PORT=${API_PORT}
+      - API_WORKERS=${API_WORKERS}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+    ports:
+      - ${API_PORT}:${API_PORT}
+    depends_on:
+      db:
+        condition: service_started
+    command: [ "sh", "./entrypoint.sh" ]
+    volumes:
+      - ./src:/src
+
+
+volumes:
+  postgres_data:

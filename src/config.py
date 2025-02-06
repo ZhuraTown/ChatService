@@ -21,7 +21,7 @@ class InfrastructureSettings(BaseSettings):
             host=self.db_host,
             port=self.db_port,
             database=self.db_name,
-        )
+        ).render_as_string(hide_password=False)
 
 
 class AuthenticationSetting(BaseSettings):

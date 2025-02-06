@@ -13,7 +13,9 @@ from config import settings
 from db.orm import *
 
 config = context.config
-config.set_main_option("sqlalchemy.url", str(settings.infrastructure.postgres_dsn))
+if config.get_main_option("sqlalchemy.url", None) is None:
+    config.set_main_option("sqlalchemy.url", settings.infrastructure.postgres_dsn.replace('%', '%%'))
+
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
